@@ -1,0 +1,27 @@
+name: Build Mod
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17' # Change to '21' if building for MC 1.20.5+
+
+      - name: Make Gradle Executable
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Upload Mod Jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: Built-Mod
+          path: build/libs/*.jar
