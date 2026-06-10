@@ -1,4 +1,4 @@
-name: Build Mod
+name: Build Retro 1.7.10 Mod
 on: [push, workflow_dispatch]
 
 jobs:
@@ -8,20 +8,24 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Java
+      # 1.7.10 absolutely requires Java 8 to compile correctly
+      - name: Setup Java 8
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17' # Change to '21' if building for MC 1.20.5+
+          distribution: 'zulu' # Zulu reliably maintains retro Java 8 packages
+          java-version: '8'
 
       - name: Make Gradle Executable
         run: chmod +x ./gradlew
 
+      # Retro Gradle environments often require specific memory flags to not crash
       - name: Build with Gradle
         run: ./gradlew build
+        env:
+          _JAVA_OPTIONS: "-Xmx2g"
 
       - name: Upload Mod Jar
         uses: actions/upload-artifact@v4
         with:
-          name: Built-Mod
+          name: Built-1.7.10-Mod
           path: build/libs/*.jar
